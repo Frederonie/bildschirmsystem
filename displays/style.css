@@ -1,0 +1,8 @@
+#body {
+    margin: 0px;
+}
+
+#imgdiv { 
+    cursor:none;
+    display: flex;
+}

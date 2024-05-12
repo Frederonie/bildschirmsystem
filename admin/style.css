@@ -1,0 +1,185 @@
+html {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+html, body {
+  margin:0px;
+
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+
+  /*
+    Introduced in IE 10.
+    See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+  */
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.navbar {
+  overflow: hidden;
+  background-color: #333;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+}
+
+.main {
+  margin-top: 60px;
+}
+
+/*Images*/
+
+#canvasdiv {
+  height: 60ch;
+  overflow: scroll;
+}
+
+.image {
+  border-radius: 5px;
+  margin: 2px;
+  width: 256px;
+}
+
+.highlight {
+  opacity: .5;
+}
+
+/*Profiles*/
+
+.profile{
+  border-radius: 5px;
+
+  padding: 2px;
+  margin: 2px;
+  
+  background-color: lightgray;
+}
+
+.profileName{
+  border-radius: 10px;
+  width: max-content;
+  padding: 2px;
+  margin: 2px;
+
+  font-size: 1.2em;
+}
+
+/*Schedule*/
+
+.week{
+  display: flex;
+  margin: 2px;
+  justify-content: stretch;
+}
+
+.day{
+  border-style: dashed;
+  border-width: 1px;
+  box-sizing: border-box;
+  display: grid;
+  padding: 2px;
+  border-radius: 10px;
+  flex-grow: 1;
+}
+
+.dateDiv, .dayDisplay{
+  position: relative;
+  grid-row: 1;
+  grid-column: 1;
+}
+
+.dayDisplay{
+  height: 720px;
+  top: 0px;
+}
+
+.timeslotBox{
+  position: absolute;
+  border-radius: 10px;
+  padding: 2px;
+  overflow-y: auto;
+}
+
+/*Timeslots*/
+
+#timeslots{
+  display: flex;
+}
+
+#timeslots > .timeslotBox{
+  margin: 2px;
+  position: relative;
+}
+
+/*creation intreface and overlay*/
+
+#interface{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+#backgroundDimmer{
+  top:0;
+  background-color: lightgray;
+  opacity: 0.5;
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  z-index: 999999998;
+}
+
+#creationOverlay, #timeslotCreation, #profileCreation, #login{
+  display: none;
+}
+
+#creation{
+  margin: 100px;
+  padding: 10px;
+
+  z-index: 999999999;
+  
+  position: fixed;
+  top: 20%;
+  left: 20%;
+  width: 60%;
+  
+  background-color: gray;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+#error{
+  color: darkred;
+}
+
+/*General*/
+
+.disabled {
+  -webkit-filter: grayscale(100%);
+  filter: grayscale(100%);
+}
+
+.edit {
+  background-color: gray;
+}
+
+button, input {
+  transition-duration: 0.4s;
+  border-radius: 10px;
+  margin: 2px;
+  border-style: none;
+}
+
+button:hover, input:hover {
+  background-color: rgb(81, 105, 124);
+  color: white;
+}

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Admin</title>
+  <link href="admin/style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <script type="module" src="admin/controller.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.1.0/jsencrypt.min.js"></script><!--RSA package-->
+
+  <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/e27b99df/index.js"></script>
+  
+  <div id="interface">
+    
+    <div id="control" class="navbar">
+        <input type="file" id="yourFiles" multiple>
+        <button id="sendFiles">Save Changes</button>
+        <button id="createProfiles">new Profile</button>
+        <button id="createTimeslot">new timeslot</button>
+        <div id="delete" class="profile">
+          Drag Objects to delete
+        </div>
+    </div>
+    
+    <div class="main">
+      <h2>Images:</h2>
+      <div id="files">
+        <div id="canvasdiv" class="profile edit">
+        
+        </div>
+      </div>
+
+      <h2>Profiles:</h2>
+      <div id="profiles">
+        
+      </div>
+      <div id="createProfile" class="profile">
+        Drag Images here to create a new profile
+      </div>
+
+      <h2>Schedule:</h2>
+      <div id="schedule">
+        <div id="weekrange" type="date"></div>
+        <input type="date" id="weekday"><br>
+      </div>
+
+      <h2>Timeslots:</h2>
+      <div id="timeslots">
+
+      </div>
+    </div>
+
+  </div>
+
+  <div id="creationOverlay">
+    <div id="backgroundDimmer"></div>
+
+    <div id="creation">
+      
+      <div id="profileCreation">
+        Name:
+        <input type="text" id="profilename"><br>
+        Color:
+        <input type="color" id="profilecolor"><br>
+        Tags:
+        <input id="profiletags" list="taglist"><br>
+        <datalist id="taglist"><br>
+          
+        </datalist>
+      </div>
+
+      <div>
+        <form id="timeslotCreation">
+          Profiles:
+          <select name="profiles">
+    
+          </select><br>
+          <!--Displays:
+          <select name="targets">
+    
+          </select><br>-->
+          
+          Starttime:
+          <input type="time" name="startTime"><br>
+          Endtime:
+          <input type="time" name="endTime"><br>
+          
+          Startdate:
+          <input type="date" name="startDate"><br>
+          Enddate:
+          <input type="date" name="endDate"><br>
+          
+          <!--Tags:
+          <input list="taglist" name="tags">
+          <datalist id="taglist">
+            
+          </datalist><br>-->
+          Priority:
+          <input type="number" name="priority" value="1"><br>
+        </form>
+      </div>
+
+      <div id="login">
+        <form id="loginForm">
+          Username:
+          <input type="text" name="username"><br>
+          Password:
+          <input type="password" name="password"><br>
+
+          <input type="button" name="login" value="Log in">
+        </form>
+      </div>
+
+      <button id="create">Create</button>
+      <div id="error">
+
+      </div>
+
+    </div>
+
+  </div>
+</body>
+
+</html>
