@@ -8,8 +8,9 @@ const mime = require('mime-types');
 const ImageDataURI = require('image-data-uri');
 const { data } = require("jquery");
 const { dirname } = require("path");
+const ip = require("ip");
 
-const host = '192.168.178.67';
+const host = ip.address();
 const port = 8000;
 const port2 = 8080;
 

@@ -54,9 +54,23 @@ profileCreator.addEventListener("drop", function(event) {
     var profileName = event.dataTransfer.getData("profile");
 
     if(!(imageName.length === 0)){
-        new Profile({name: imageName, color: "gray", files: [imageName]});
+        //create new profile from image
+        
+        //set color to average of image
+        const fac = new FastAverageColor()
+
+        for(var image of Image.getImages()){
+            if(imageName == image.getName()){
+                fac.getColorAsync(image.getMainDisplay()).then(color => {
+                    new Profile({name: imageName, color: color.rgba, files: [imageName]});
+                })
+                .catch(e => {
+                    console.log(e);
+                });
+            }
+        }
     }else if(!(profileName.length === 0)){
-        //add all images of profile
+        //copy old profile
         for(var profile of Profile.getProfiles()){
             if(profile.getName() == profileName){
                 var profileFiles = [];
@@ -118,7 +132,7 @@ async function sendChanges(){
 
         document.getElementById("create").style.display = "none";
 
-        var form = document.getElementById("login_form");
+        var form = document.getElementById("loginForm");
 
         form.login.onclick = async function() {
             localStorage.setItem("account", JSON.stringify({username: form.username.value, password: form.password.value}));

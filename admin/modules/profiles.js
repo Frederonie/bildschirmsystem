@@ -63,10 +63,13 @@ class Profile{
         this.#imageDiv = document.createElement("div");
         this.#mainDiv.appendChild(this.#imageDiv);
 
+
+        
         this.#dragAndDropSetup();
 
         this.#loadDisplays();
 
+        //set profile active if there are is no active profile
         if(!Profile.activeProfile){
             this.setActive();
         }
@@ -215,17 +218,16 @@ class Profile{
     static createProfileFromForm(form){
         //uses data from form and to create new Profile
         //--------------------------temporary!!!!!!----------------------needs better code
-        var profile_name = document.getElementById("profilename").value.replace(/\s/g , "-"),
-            profile_color = document.getElementById("profilecolor").value;
-    
+        var form = document.getElementById("profileCreation");
 
-        new Profile({name: profile_name, color: profile_color, files: []});
+        new Profile({name: form.name.value.replace(/\s/g , "-"), color: form.color.value, files: []});
+        
+        //reset creation overlay
+        document.getElementById("profileCreation").style.display = "none";
 
-        document.getElementById("profile_creation").style.display = "none";
+        document.getElementById("creationOverlay").style.display= "none";
 
-        document.getElementById("creation-overlay").style.display= "none";
-
-        error_display.innerText = "";
+        document.getElementById("error").innerText = "";
     }
 
     static preloadProfiles(){

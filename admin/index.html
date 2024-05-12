@@ -14,6 +14,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.1.0/jsencrypt.min.js"></script><!--RSA package-->
 
   <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/e27b99df/index.js"></script>
+
+  <script src="https://unpkg.com/fast-average-color/dist/index.browser.min.js"></script><!--Average Color-->
   
   <div id="interface">
     
@@ -62,17 +64,17 @@
 
     <div id="creation">
       
-      <div id="profileCreation">
+      <form id="profileCreation">
         Name:
-        <input type="text" id="profilename"><br>
+        <input type="text" name="name"><br>
         Color:
-        <input type="color" id="profilecolor"><br>
-        Tags:
+        <input type="color" name="color"><br>
+        <!--Tags:
         <input id="profiletags" list="taglist"><br>
         <datalist id="taglist"><br>
           
-        </datalist>
-      </div>
+        </datalist>-->
+      </form>
 
       <div>
         <form id="timeslotCreation">
