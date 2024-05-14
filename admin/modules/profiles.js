@@ -8,7 +8,9 @@ class Profile{
     static #profiles = [];
     static activeProfile = false;
     #mainDiv;
+    #headlineDiv;
     #nameDiv;
+    #colorChanger;
     #imageDiv;
     #images = [];
     #data;
@@ -16,7 +18,9 @@ class Profile{
     constructor(data){
         this.#data = data;
 
-        this.#data.name = this.#data.name.replace(/\s/g , "-");
+        //this.#data.name = this.#data.name.replace(/\s/g , "");//remove spaces
+
+        this.#data.name = this.#data.name.replace(/[^a-zA-Z0-9.()]/g, '');
 
         this.#resolveConflicts();
 
@@ -49,6 +53,13 @@ class Profile{
         //create Display
         document.getElementById("profiles").appendChild(this.#mainDiv);
 
+        //headlineDiv
+        this.#headlineDiv = Object.assign(document.createElement("div"), {
+            
+        });
+        this.#mainDiv.appendChild(this.#headlineDiv);
+
+        //nameDiv
         this.#nameDiv = Object.assign(document.createElement("div"), {
             textContent: this.#data.name,
             contentEditable: true,
@@ -56,15 +67,27 @@ class Profile{
             onblur: this.#updateName.bind(this)
         });
         Object.assign(this.#nameDiv.style,{
-            backgroundColor: this.#data.color
+            backgroundColor: this.#data.color,
         });
-        this.#mainDiv.appendChild(this.#nameDiv);
+        this.#headlineDiv.appendChild(this.#nameDiv);
 
+        //colorChanger
+
+        this.#colorChanger = Object.assign(document.createElement("input"), {
+            type: "color",
+            classList: "colorChanger",
+            value: this.#data.color,
+            oninput: this.#updateColor.bind(this)
+        });
+        Object.assign(this.#colorChanger.style,{
+            backgroundColor: this.#data.color,
+        });
+        this.#headlineDiv.appendChild(this.#colorChanger);
+
+        //imageDiv
         this.#imageDiv = document.createElement("div");
         this.#mainDiv.appendChild(this.#imageDiv);
 
-
-        
         this.#dragAndDropSetup();
 
         this.#loadDisplays();
@@ -78,9 +101,9 @@ class Profile{
     #updateName(){
         var oldName = this.#data.name;
         
-        this.#data.name = this.#nameDiv.innerText;
+        this.#data.name = this.#nameDiv.innerText.replace(/[^a-zA-Z0-9.()]/g, '');
 
-        this.#resolveConflicts();console.log(this.#data.name);
+        this.#resolveConflicts();
 
         this.#nameDiv.innerText = this.#data.name;
 
@@ -92,6 +115,14 @@ class Profile{
         }
 
         Timeslot.displayTimeslots();
+    }
+
+    #updateColor(){
+        this.#data.color = this.#colorChanger.value;
+
+        this.#colorChanger.style.backgroundColor = this.#data.color;
+
+        this.#nameDiv.style.backgroundColor = this.#data.color;
     }
 
     #loadDisplays(){
@@ -108,14 +139,17 @@ class Profile{
         }   
     }
 
-    #resolveConflicts(){
+    #resolveConflicts(iteration = 0, originalName = this.#data.name){
+        console.log(originalName);
+
         //checks for and resolves naming conflicts
         for(var profile of Profile.#profiles){console.log(this.#data.name, String(profile.#data.name), String(this.#data.name) == String(profile.#data.name))
             if(profile.#data.name == this.#data.name && this != profile){
-                //--------------------------temporary!!!!!!----------------------needs custom confirm
-                this.#data.name += 1;
+                iteration += 1;
+                
+                this.#data.name = "(" + iteration + ")" + originalName;
 
-                this.#resolveConflicts();
+                this.#resolveConflicts(iteration, originalName);
 
                 break;
             }
@@ -234,7 +268,7 @@ class Profile{
         //preloads profiles from server
         readTextFile(host + "/data/profiles/info.json", function(output){
             for(var profile of JSON.parse(output)){
-                var file = host + "/data/profiles/" + profile;
+                var file = host + "/data/profiles/" + profile + ".txt";
 
                 readTextFile(file, function(output){
                     var data = JSON.parse(output);

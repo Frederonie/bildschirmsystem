@@ -12,7 +12,7 @@ class Image{
     #mainDisplay;
 
     constructor(name, src){
-        this.#name = name;
+        this.#name = name.replace(/[^a-zA-Z0-9.()]/g, '');
         this.#src = src;
 
         this.#resolveConflicts();
@@ -22,14 +22,15 @@ class Image{
         Image.#images.push(this);
     }
 
-    #resolveConflicts(){
+    #resolveConflicts(iteration = 0, originalName = this.#name){
         //checks for naming conflicts with other Images and resolves them
         for(var image of Image.#images){
             if(image.#name == this.#name){
-                //--------------------------temporary!!!!!!----------------------needs custom confirm
-                this.#name += 1;
+                iteration += 1;
 
-                this.#resolveConflicts();
+                this.#name = "(" + iteration + ")" + originalName;
+
+                this.#resolveConflicts(iteration, originalName);
 
                 break;
             }

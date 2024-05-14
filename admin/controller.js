@@ -62,7 +62,7 @@ profileCreator.addEventListener("drop", function(event) {
         for(var image of Image.getImages()){
             if(imageName == image.getName()){
                 fac.getColorAsync(image.getMainDisplay()).then(color => {
-                    new Profile({name: imageName, color: color.rgba, files: [imageName]});
+                    new Profile({name: imageName, color: color.hex, files: [imageName]});
                 })
                 .catch(e => {
                     console.log(e);

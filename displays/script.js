@@ -1,4 +1,4 @@
-function readTextFile(file, callback) {
+function readdataFile(file, callback) {
     var rawFile = new XMLHttpRequest();
     rawFile.overrideMimeType("application/json");
     rawFile.open("GET", file, true);
@@ -28,18 +28,20 @@ function getWinDim()
     }
 }
 
-var srclist = false;
+var srcList = false;
 
-function loadImages(text){
-    if(text != JSON.stringify(srclist)){
-        srclist = JSON.parse(text).files;
+function loadImages(data){ //loads images of new profile
+    var profileSrcs = JSON.parse(data).files
+
+    if(profileSrcs != srcList){
+        srcList = profileSrcs;
 
         for(var image of images){//clear images
             image.remove()
         }
         images = [];
         
-        for(var src of srclist){
+        for(var src of srcList){
             var image = document.createElement("img");
 
             //adjust size on load
@@ -71,10 +73,8 @@ function loadImages(text){
         }
         
         //set current image in accordance with time
-        var timeintoloop = Date.now() % (interval * srclist.length),
+        var timeintoloop = Date.now() % (interval * srcList.length),
             currentimage = Math.floor(timeintoloop / interval);
-
-
 
         images[currentimage].style.display = "block";
 
@@ -82,10 +82,10 @@ function loadImages(text){
     }
 }
 
-function getProfile(){
+function getProfile(){ // gets the current profile
     setTimeout(getProfile, interval - (Date.now() % interval));
 
-    readTextFile(host + "/data/schedule/info.json", function(output) {
+    readdataFile(host + "/data/schedule/info.json", function(output) {
         var timeslots = JSON.parse(output),
             currentprofile = "main",
             currentpriority = false;
@@ -106,14 +106,14 @@ function getProfile(){
             }
         }
         try{
-            readTextFile(host + "/data/profiles/" + currentprofile, text => loadImages(text));
+            readdataFile(host + "/data/profiles/" + currentprofile + ".txt", data => loadImages(data));
         }catch(err){
             console.log(err);
         }
     });
 }
 
-function updateimg() {  // loads next image
+function updateimg() { // loads next image
     setTimeout(updateimg, interval - (Date.now() % interval));
     images[element].style.display = "none";
 
@@ -124,7 +124,10 @@ function updateimg() {  // loads next image
 
 window.onload = function() {
     getProfile();
+
     console.log(interval - (Date.now() % interval));
+
     setTimeout(getProfile, interval - (Date.now() % interval));
+
     setTimeout(updateimg, interval - (Date.now() % interval));
 }

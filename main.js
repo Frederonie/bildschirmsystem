@@ -27,24 +27,25 @@ var dataDirectories = [
 
 //-----------Images
 function alterImages(request_data, req){//
-    var new_files = request_data.data.new_files,
+    var newFiles = request_data.data.newFiles,
         dataUris = request_data.data.dataUris,
         path = __dirname + req.url + request_data.directory;
         
     //save new files
-    for(var i = 0; i < new_files.length; i++){
-        if(!dataUris[i].includes(new_files[i])){
-            console.log(path + new_files[i]);
+    for(var i = 0; i < newFiles.length; i++){
+        if(!dataUris[i].includes(newFiles[i])){
+            console.log(path + newFiles[i]);
 
             try{
                 decodedImage = ImageDataURI.decode(dataUris[i]);
                 
-                fs.writeFile(path + new_files[i], decodedImage.dataBuffer, function(err){if (err) throw err;});
+                fs.writeFile(path + newFiles[i], decodedImage.dataBuffer, function(err){if (err) throw err;});
             }
             catch(err){
-                //remove from new_files on error
+                //remove from newFiles on error
                 console.log(err);
-                new_files.splice(i, 1);
+                newFiles.splice(i, 1);
+                dataUris.splice(i, 1);
                 i--;
             }
             
@@ -57,16 +58,16 @@ function alterImages(request_data, req){//
             throw err;
         };
 
-        current_files = JSON.parse(data);
+        currentFiles = JSON.parse(data);
 
-        for(var i = 0; i < current_files.length; i++){
-            if(!new_files.includes(current_files[i])){
-                fs.unlink(path + current_files[i], function(err){if (err) throw err;});
+        for(var i = 0; i < currentFiles.length; i++){
+            if(!newFiles.includes(currentFiles[i])){
+                fs.unlink(path + currentFiles[i], function(err){if (err) throw err;});
             }
         };
 
         //save new info file
-        fs.writeFile(path + "info.json", JSON.stringify(new_files), function(err){if (err) throw err;});
+        fs.writeFile(path + "info.json", JSON.stringify(newFiles), function(err){if (err) throw err;});
     })
 }
 
@@ -78,19 +79,19 @@ function ImageUpload(request_data, req){
 
 //----------Profiles
 function alterProfiles(request_data, req){//
-    var new_files = request_data.data.new_files,
+    var newFiles = request_data.data.newFiles,
         data = request_data.data.data,
         path = __dirname + req.url + request_data.directory;
         
     //save new files
-    for(var i = 0; i < new_files.length; i++){  
-        console.log(path + new_files[i]);
+    for(var i = 0; i < newFiles.length; i++){  
+        console.log(path + newFiles[i]);
 
         try{
-            fs.writeFile(path + new_files[i], JSON.stringify(data[i]), function(err){if (err) throw err;});
+            fs.writeFileSync(path + newFiles[i] + ".txt", JSON.stringify(data[i]), function(err){if (err) throw err;});
         }
         catch(err){
-            new_files.splice(i, 1);
+            newFiles.splice(i, 1);
             i--;
         }
     }
@@ -101,21 +102,21 @@ function alterProfiles(request_data, req){//
             throw err;
         };
 
-        current_files = JSON.parse(data);
+        currentFiles = JSON.parse(data);
 
-        for(var i = 0; i < current_files.length; i++){
-            if(!new_files.includes(current_files[i])){
-                fs.unlink(path + current_files[i], function(err){if (err) throw err;});
+        for(var i = 0; i < currentFiles.length; i++){
+            if(!newFiles.includes(currentFiles[i])){
+                fs.unlinkSync(path + currentFiles[i] + ".txt", function(err){if (err) throw err;});
             }
         };
 
         //save new info file
-        fs.writeFile(path + "info.json", JSON.stringify(new_files), function(err){if (err) throw err;});
+        fs.writeFileSync(path + "info.json", JSON.stringify(newFiles), function(err){if (err) throw err;});
     })
 }
 
 
-function ProfileUpload(request_data, req){
+async function ProfileUpload(request_data, req){
     if(request_data.action == "alter"){
         alterProfiles(request_data, req);
     }
@@ -123,13 +124,13 @@ function ProfileUpload(request_data, req){
 
 //----------Schedule
 
-function alterSchedule(request_data, req){//
+async function alterSchedule(request_data, req){//
     var path = __dirname + req.url + request_data.directory;
         
     fs.writeFile(path + "info.json", JSON.stringify(request_data.data), function(err){if (err) throw err;});
 }
 
-function ScheduleUpload(request_data, req){
+async function ScheduleUpload(request_data, req){
     if(request_data.action == "alter"){
         alterSchedule(request_data, req);
     }

@@ -41,7 +41,7 @@ function uploadChanges(Image, Profile, Timeslot){
 
   var images = {
     data:{
-      new_files: Names, 
+      newFiles: Names, 
       dataUris: dataUris
     },
     action: "alter", 
@@ -62,7 +62,7 @@ function uploadChanges(Image, Profile, Timeslot){
 
   var profiles = {
     data:{
-      new_files: Names,
+      newFiles: Names,
       data: data
     },
     action: "alter", 
