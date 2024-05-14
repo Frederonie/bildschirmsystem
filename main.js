@@ -1,14 +1,25 @@
+//networking
 const http = require("http");
+const ip = require("ip");
+
+//transfer
+const mime = require('mime-types');
+const ImageDataURI = require('image-data-uri');
+
+//filesystem
 const fs = require("fs");
+const { data } = require("jquery");
+const { dirname } = require("path");
+
+//encryption
+const bcrypt = require('bcryptjs');
 const EncryptRsa = require('encrypt-rsa').default;
 const JSEncrypt = require('node-jsencrypt');
 const Aesjs = require('aes-js');
+
+//scheduling
 const Schedule = require('node-schedule');
-const mime = require('mime-types');
-const ImageDataURI = require('image-data-uri');
-const { data } = require("jquery");
-const { dirname } = require("path");
-const ip = require("ip");
+const { hasUncaughtExceptionCaptureCallback } = require("process");
 
 const host = ip.address();
 const port = 8000;
@@ -147,7 +158,7 @@ function uploadListener(req, res){// saves the file it received
         try{
             var request_data = JSON.parse(body);
             
-            fs.readFile(__dirname + "/data/accounts/accounts.json", function(err, data){
+            fs.readFile(__dirname + "/data/accounts/accountsHashed.json", function(err, data){
                 if(err){
                     throw err;
                 };
@@ -178,7 +189,7 @@ function uploadListener(req, res){// saves the file it received
                     //verify user
                     var correctLogin = false;
                     for(var account of accounts){
-                        if(account.username == data.account.username && account.password == data.account.password){
+                        if(account.username == data.account.username && bcrypt.compareSync(data.account.password, account.password)){
                             correctLogin = true;
                         }
                     }
@@ -227,7 +238,7 @@ uploadserver.listen(port2, host, () => {
 
 //-----------------Download Server
 
-function readfile(path, req, res) { //read a file and respond with it
+function readFile(path, req, res) { //read a file and respond with it
     fs.promises.readFile(path)
         .then(contents => {
             res.setHeader("Content-Type", mime.lookup(path));
@@ -258,7 +269,7 @@ function reqcicle(req, res) { // the cicle each request goes through
         path = __dirname + "/error404.html";
     };
 
-    return readfile(path, req, res);
+    return readFile(path, req, res);
 }
 
 const requestListener = function (req, res) { // gets called when there is a http request
@@ -272,7 +283,7 @@ server.listen(port, host, () => {
     console.log(`Download Server is running on http://${host}:${port}`);
 });
 
-//--------Create Basic Data Directories
+//--------Fix up old or missing directories
 
 //data directory
 
@@ -315,14 +326,34 @@ for(var directory of dataDirectories){
 //accounts directory
 
 function checkAndResetAccounts(){
-    var directoryPath = path = __dirname + "/data/accounts";
+    var directoryPath = __dirname + "/data/accounts";
 
-    if(!fs.existsSync(directoryPath)){
-        fs.mkdirSync(directoryPath);
-    
-        fs.writeFile(directoryPath + "/accounts.json", JSON.stringify([{username:"admin",password:"admin"}]), function(err){if (err) throw err;});
-    }else if(!fs.existsSync(directoryPath + "/accounts.json")){
-        fs.writeFile(directoryPath + "/accounts.json", JSON.stringify([{username:"admin",password:"admin"}]), function(err){if (err) throw err;});
+    var salt = bcrypt.genSaltSync(10);
+
+    var defaultAccounts = [{username:"admin",password: bcrypt.hashSync("admin", salt)}];
+
+    fs.mkdirSync(directoryPath, { recursive: true });
+
+    if(!fs.existsSync(directoryPath + "/accountsHashed.json")){
+        if(!fs.existsSync(directoryPath + "/accounts.json")){//regenerate Hashed accounts as default
+            fs.writeFile(directoryPath + "/accountsHashed.json", JSON.stringify(defaultAccounts), function(err){if (err) throw err;});
+        }else{//convert accounts.json to hashed format
+            fs.promises.readFile(directoryPath + "/accounts.json").then(contents => {
+                var accounts = JSON.parse(contents)
+
+                var accountsHashed = [];
+
+                for(var account of accounts){
+                    account.password = bcrypt.hashSync(account.password, salt);
+
+                    accountsHashed.push(account);
+                }
+
+                fs.writeFile(directoryPath + "/accountsHashed.json", JSON.stringify(accountsHashed), function(err){if (err) throw err;});
+
+                fs.unlink(directoryPath + "/accounts.json", function(err){if (err) throw err;});
+            })
+        }
     }
 }
 
