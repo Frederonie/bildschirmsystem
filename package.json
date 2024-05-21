@@ -1,6 +1,6 @@
 {
   "name": "bildschirmsystem",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Schulinternes Informationssystem für die Klaus-Groth-Schule, Neumünster",
   "main": "main.js",
   "scripts": {

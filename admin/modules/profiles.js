@@ -7,6 +7,7 @@ var host = window.location.protocol + "//" + window.location.host;
 class Profile{
     static #profiles = [];
     static activeProfile = false;
+    
     #mainDiv;
     #headlineDiv;
     #nameDiv;

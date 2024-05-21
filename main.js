@@ -256,7 +256,7 @@ function reqcicle(req, res) { // the cicle each request goes through
     if(fs.existsSync(__dirname + req.url) && fs.statSync(__dirname + req.url).isFile()){
         path = __dirname + req.url;
 
-        if(req.url == "/data/accounts/accounts.json"){
+        if(String(req.url).startsWith("/data/accounts/")){
             res.writeHead(403);
             res.end("Access forbidden!")
             return false;
