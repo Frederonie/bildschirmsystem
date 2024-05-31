@@ -149,6 +149,60 @@ async function ScheduleUpload(request_data, req){
 
 //----------General
 
+function checkAndFixActionDependencies(actions){
+    //Checks if all actions fit with oneanother
+
+    //leave only one action per directory
+    var directories = [];
+    var adjustedActions = [];
+
+    for(var action of actions){
+        if(!directories.includes(action.directory)){
+            directories.push(action.directory);
+            adjustedActions.push(action)
+        }
+    }
+
+    //check dependencies
+    var images;
+    var profiles;
+    
+    for(var i = 0; i < adjustedActions.length; i++){
+        if(adjustedActions[i].directory == "displayables/"){
+            if(adjustedActions[i].action == "alter"){
+                images = adjustedActions[i].data.newFiles;
+            }
+        }else if(adjustedActions[i].directory == "profiles/"){
+            if(adjustedActions[i].action == "alter"){
+                profiles = adjustedActions[i].data.newFiles;
+
+                //check profiles
+                for(var j = 0; j < adjustedActions[i].data.data.length; j++){
+                    var existingImages = [];
+                    for(var k = 0; k < adjustedActions[i].data.data[j].files.length; k++){
+                        if(images.includes(adjustedActions[i].data.data[j].files[k])){
+                            existingImages.push(adjustedActions[i].data.data[j].files[k])
+                        }
+                    }
+                    adjustedActions[i].data.data[j].files = existingImages;
+                }
+            }
+        }else if(adjustedActions[i].directory == "schedule/"){
+            if(adjustedActions[i].action == "alter"){
+                var workingTimeslots = [];
+                for(var j = 0; j < adjustedActions[i].data.length; j++){
+                    if(profiles.includes(adjustedActions[i].data[j].profiles)){
+                        workingTimeslots.push(adjustedActions[i].data[j])
+                    }
+                }
+                adjustedActions[i].data = workingTimeslots;
+            }
+        }
+    }
+
+    return adjustedActions;
+}
+
 function uploadListener(req, res){// saves the file it received
     let body = '';//dataUri of Image
     req.on('data', chunk => {
@@ -199,6 +253,8 @@ function uploadListener(req, res){// saves the file it received
 
                     //Continue normal procedure
                     if(correctLogin){
+
+                        data.actions = checkAndFixActionDependencies(data.actions);
                         
                         //loop through all actions provided by the request and process them
                         for(var action of data.actions){
